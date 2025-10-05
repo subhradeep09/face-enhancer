@@ -49,11 +49,67 @@ The web interface uses HTML5 Canvas and browser-based image processing to enhanc
 
 ```
 face enhancer/
-├── web/
-│   └── simple.html        # Main web interface
-├── start_web.bat          # Launch script
-└── README.md             # This file
+├── 📁 src/                          # C++ Source Code
+│   ├── main.cpp                     # Application entry point
+│   ├── face_enhancer.cpp            # Core enhancement engine
+│   ├── image_processor.cpp          # Image I/O and quality metrics
+│   ├── enhancement_algorithms.cpp   # Image processing algorithms
+│   ├── face_detector.cpp            # Face detection functionality
+│   ├── utils.cpp                    # Utility functions
+│   └── 📁 include/                  # Header files
+│       ├── face_enhancer.h
+│       ├── image_processor.h
+│       ├── enhancement_algorithms.h
+│       ├── face_detector.h
+│       └── utils.h
+├── 📁 web/                          # Web Interface
+│   ├── simple.html                  # Main web interface (recommended)
+│   ├── index.html                   # Advanced web interface
+│   ├── styles.css                   # CSS styling
+│   ├── script.js                    # JavaScript functionality
+│   └── python_server.py             # Python backend server
+├── 📁 input/                        # Input images directory
+├── 📁 output/                       # Enhanced images output
+├── 📁 build/                        # Build artifacts (created after compilation)
+├── CMakeLists.txt                   # C++ build configuration
+├── build.bat                        # Windows build script
+├── build.sh                         # Linux/macOS build script
+├── start_web.bat                    # Web interface launcher
+├── start_web_python.bat             # Alternative web launcher
+├── LICENSE                          # MIT license
+└── README.md                        # This documentation
 ```
+
+## Component Overview
+
+### 🌐 Web Interface (Recommended)
+- **simple.html**: Complete browser-based face enhancer
+  - Drag & drop image upload
+  - Real-time enhancement sliders
+  - Before/after comparison
+  - Direct download functionality
+- **index.html**: Advanced interface (requires backend server)
+- **styles.css**: Modern, responsive styling
+- **script.js**: Interactive enhancement controls
+
+### 💻 C++ Backend (Optional)
+- **main.cpp**: Command-line interface for batch processing
+- **face_enhancer.cpp**: 8-step enhancement pipeline
+- **image_processor.cpp**: Image I/O and quality analysis
+- **enhancement_algorithms.cpp**: Core enhancement functions
+- **face_detector.cpp**: OpenCV-based face detection
+- **utils.cpp**: File handling and utility functions
+
+### 🛠️ Build & Launch Tools
+- **CMakeLists.txt**: Professional C++ build configuration
+- **build.bat/build.sh**: Automated compilation scripts
+- **start_web.bat**: One-click web interface launcher
+- **python_server.py**: Simple HTTP server for advanced features
+
+### 📂 Data Directories
+- **input/**: Source images for processing
+- **output/**: Enhanced images destination
+- **build/**: Compiled C++ executable and artifacts
 
 ## Troubleshooting
 
