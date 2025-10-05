@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Enhancer - AI Image Enhancement</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-image"></i>
+                    <h1>Face Enhancer</h1>
+                </div>
+                <p class="subtitle">Transform blurred faces into crystal clear images using AI</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <div class="upload-card">
+                    <h2><i class="fas fa-upload"></i> Upload Image</h2>
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <p class="upload-text">
+                            <strong>Click to upload</strong> or drag and drop your image here
+                        </p>
+                        <p class="upload-hint">Supports JPG, PNG, BMP, TIFF files</p>
+                        <input type="file" id="imageInput" accept="image/*" hidden>
+                    </div>
+                    
+                    <!-- Image Preview -->
+                    <div class="image-preview" id="imagePreview" style="display: none;">
+                        <img id="previewImage" src="" alt="Preview">
+                        <div class="image-info">
+                            <p id="imageInfo"></p>
+                            <button class="btn btn-secondary" onclick="clearImage()">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Enhancement Controls -->
+            <section class="controls-section">
+                <div class="controls-card">
+                    <h3><i class="fas fa-sliders-h"></i> Enhancement Settings</h3>
+                    
+                    <div class="control-group">
+                        <label for="strengthSlider">Enhancement Strength</label>
+                        <div class="slider-container">
+                            <input type="range" id="strengthSlider" min="0.5" max="3.0" step="0.1" value="1.5">
+                            <span class="slider-value" id="strengthValue">1.5</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="noiseSlider">Noise Reduction</label>
+                        <div class="slider-container">
+                            <input type="range" id="noiseSlider" min="1.0" max="10.0" step="0.5" value="3.0">
+                            <span class="slider-value" id="noiseValue">3.0</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="edgeSlider">Edge Enhancement</label>
+                        <div class="slider-container">
+                            <input type="range" id="edgeSlider" min="0.5" max="2.0" step="0.1" value="1.0">
+                            <span class="slider-value" id="edgeValue">1.0</span>
+                        </div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="superResolution">
+                            <span class="checkmark"></span>
+                            Enable Super Resolution (2x upscaling)
+                        </label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="qualityMetrics" checked>
+                            <span class="checkmark"></span>
+                            Show Quality Metrics
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Enhancement Button -->
+            <section class="action-section">
+                <button class="btn btn-primary btn-enhance" id="enhanceBtn" onclick="enhanceImage()" disabled>
+                    <i class="fas fa-magic"></i>
+                    <span class="btn-text">Enhance Image</span>
+                    <div class="loading-spinner" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                </button>
+                
+                <div class="processing-info" id="processingInfo" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="processing-text" id="processingText">Processing your image...</p>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-card">
+                    <h2><i class="fas fa-check-circle"></i> Enhanced Result</h2>
+                    
+                    <div class="comparison-container">
+                        <div class="image-comparison">
+                            <div class="before-after">
+                                <div class="image-side">
+                                    <h4>Before</h4>
+                                    <img id="beforeImage" src="" alt="Original">
+                                </div>
+                                <div class="image-side">
+                                    <h4>After</h4>
+                                    <img id="afterImage" src="" alt="Enhanced">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quality Metrics -->
+                    <div class="metrics-container" id="metricsContainer" style="display: none;">
+                        <h4><i class="fas fa-chart-line"></i> Quality Metrics</h4>
+                        <div class="metrics-grid">
+                            <div class="metric-item">
+                                <span class="metric-label">PSNR</span>
+                                <span class="metric-value" id="psnrValue">--</span>
+                                <span class="metric-unit">dB</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">SSIM</span>
+                                <span class="metric-value" id="ssimValue">--</span>
+                                <span class="metric-unit"></span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">Sharpness</span>
+                                <span class="metric-value" id="sharpnessValue">--</span>
+                                <span class="metric-unit">×</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">Processing Time</span>
+                                <span class="metric-value" id="timeValue">--</span>
+                                <span class="metric-unit">s</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Download Button -->
+                    <div class="download-section">
+                        <button class="btn btn-success" onclick="downloadEnhanced()">
+                            <i class="fas fa-download"></i> Download Enhanced Image
+                        </button>
+                        <button class="btn btn-secondary" onclick="processAnother()">
+                            <i class="fas fa-plus"></i> Enhance Another Image
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Face Enhancer - Powered by OpenCV and AI</p>
+        </footer>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal" id="errorModal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeErrorModal()">&times;</span>
+            <h3><i class="fas fa-exclamation-triangle"></i> Error</h3>
+            <p id="errorMessage"></p>
+            <button class="btn btn-primary" onclick="closeErrorModal()">OK</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
