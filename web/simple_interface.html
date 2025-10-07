@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Enhancer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 1200px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .upload-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 20px;
+            background: rgba(102, 126, 234, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: rgba(118, 75, 162, 0.1);
+        }
+
+        .upload-area.drag-over {
+            border-color: #52d397;
+            background: rgba(82, 211, 151, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .upload-subtext {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .enhance-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            display: none;
+        }
+
+        .enhance-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .enhance-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .preview-section {
+            display: none;
+            margin: 30px 0;
+        }
+
+        .preview-image {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 10px;
+            margin: 0 auto;
+            display: block;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-section {
+            display: none;
+            margin-top: 40px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .result-item {
+            text-align: center;
+        }
+
+        .result-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .result-image {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .result-image:hover {
+            transform: scale(1.02);
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #52d397 0%, #4caf50 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(82, 211, 151, 0.3);
+            margin: 20px 10px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(82, 211, 151, 0.4);
+        }
+
+        .processing {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .processing-text {
+            font-size: 20px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #ff7b7b 0%, #ff6b6b 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            margin: 10px;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #c62828;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .upload-area {
+                padding: 40px 15px;
+            }
+
+            .upload-text {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📸</div>
+                <div class="upload-text">Drop your image here</div>
+                <div class="upload-subtext">or click to browse files</div>
+                <input type="file" class="file-input" id="fileInput" accept="image/*">
+            </div>
+            
+            <!-- Preview Section -->
+            <div class="preview-section" id="previewSection">
+                <img class="preview-image" id="previewImage" alt="Preview">
+            </div>
+            
+            <button class="enhance-btn" id="enhanceBtn">🚀 AI Image Enhance</button>
+            
+            <!-- Error Message -->
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <!-- Processing Section -->
+        <div class="processing" id="processingSection">
+            <div class="spinner"></div>
+            <div class="processing-text">Enhancing your image with AI...</div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+            <div class="results-grid">
+                <div class="result-item">
+                    <div class="result-title">📷 Original Image</div>
+                    <img class="result-image" id="originalImage" alt="Original">
+                </div>
+                <div class="result-item">
+                    <div class="result-title">✨ Enhanced Image</div>
+                    <img class="result-image" id="enhancedImage" alt="Enhanced">
+                </div>
+            </div>
+            
+            <div style="text-align: center;">
+                <button class="download-btn" id="downloadBtn">💾 Download Enhanced Image</button>
+                <button class="reset-btn" id="resetBtn">🔄 Enhance Another Image</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const previewSection = document.getElementById('previewSection');
+        const previewImage = document.getElementById('previewImage');
+        const enhanceBtn = document.getElementById('enhanceBtn');
+        const processingSection = document.getElementById('processingSection');
+        const resultsSection = document.getElementById('resultsSection');
+        const originalImage = document.getElementById('originalImage');
+        const enhancedImage = document.getElementById('enhancedImage');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const errorMessage = document.getElementById('errorMessage');
+
+        let currentImageData = null;
+        let enhancedImageData = null;
+
+        // Upload area click handler
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Drag and drop handlers
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        // File input change handler
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        // Handle file selection
+        function handleFileSelect(file) {
+            if (!file.type.startsWith('image/')) {
+                showError('Please select a valid image file.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentImageData = e.target.result;
+                previewImage.src = currentImageData;
+                previewSection.style.display = 'block';
+                enhanceBtn.style.display = 'inline-block';
+                hideError();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Enhance button click handler
+        enhanceBtn.addEventListener('click', () => {
+            if (!currentImageData) return;
+            
+            enhanceImage();
+        });
+
+        // Enhance image function
+        async function enhanceImage() {
+            try {
+                // Show processing
+                previewSection.style.display = 'none';
+                enhanceBtn.style.display = 'none';
+                processingSection.style.display = 'block';
+                resultsSection.style.display = 'none';
+                hideError();
+
+                // Prepare multipart form data in the expected format
+                const formData = new FormData();
+                
+                // Add the image data directly as base64 string
+                formData.append('image', currentImageData);
+                
+                // Add parameters as JSON string
+                const parameters = {
+                    mode: 'gfpgan',
+                    scaleFactor: 2,
+                    sharpenStrength: 1.2,
+                    noiseReduction: 6,
+                    contrast: 1.15,
+                    enableFaceEnhancement: true
+                };
+                formData.append('parameters', JSON.stringify(parameters));
+
+                // Send request
+                const enhanceResponse = await fetch('/api/enhance', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await enhanceResponse.json();
+
+                if (result.success) {
+                    enhancedImageData = result.enhancedImage;
+                    
+                    // Show results
+                    originalImage.src = currentImageData;
+                    enhancedImage.src = enhancedImageData;
+                    
+                    processingSection.style.display = 'none';
+                    resultsSection.style.display = 'block';
+                } else {
+                    throw new Error(result.error || 'Enhancement failed');
+                }
+
+            } catch (error) {
+                console.error('Enhancement error:', error);
+                processingSection.style.display = 'none';
+                previewSection.style.display = 'block';
+                enhanceBtn.style.display = 'inline-block';
+                showError('Enhancement failed: ' + error.message);
+            }
+        }
+
+        // Download button handler
+        downloadBtn.addEventListener('click', () => {
+            if (!enhancedImageData) return;
+
+            const link = document.createElement('a');
+            link.href = enhancedImageData;
+            link.download = 'enhanced_image.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // Reset button handler
+        resetBtn.addEventListener('click', () => {
+            currentImageData = null;
+            enhancedImageData = null;
+            previewSection.style.display = 'none';
+            enhanceBtn.style.display = 'none';
+            resultsSection.style.display = 'none';
+            processingSection.style.display = 'none';
+            fileInput.value = '';
+            hideError();
+        });
+
+        // Error handling
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        // Check server status on load
+        async function checkServerStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const status = await response.json();
+                if (!status.available) {
+                    showError('AI enhancement service is not available. Please try again later.');
+                }
+            } catch (error) {
+                showError('Unable to connect to enhancement service. Please check your connection.');
+            }
+        }
+
+        // Initialize
+        checkServerStatus();
+    </script>
+</body>
+</html>
